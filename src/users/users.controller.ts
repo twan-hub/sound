@@ -8,6 +8,8 @@ import {
   Put,
 } from '@nestjs/common';
 import { UserPostResponseDto } from './dto/user-create.dto';
+import { UserDeleteResponseDto } from './dto/user-delete.dto';
+import { UserUpdateResponseDto } from './dto/user-update.dto';
 import { User } from './user.entity';
 import { UsersService } from './users.service';
 
@@ -28,12 +30,15 @@ export class UsersController {
   }
 
   @Put()
-  update(@Body() user: User) {
-    return this.service.updateUser(user);
+  update(
+    @Body()
+    userUpdateResponseDto: UserUpdateResponseDto,
+  ): Promise<any> {
+    return this.service.updateUser(userUpdateResponseDto);
   }
 
   @Delete(':id')
-  deleteUser(@Body() user: User) {
-    return this.service.deleteUser(user);
+  deleteUser(@Body() userDeleteResponseDto: UserDeleteResponseDto) {
+    return this.service.inactiveUser(userDeleteResponseDto);
   }
 }

@@ -3,6 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserPostResponseDto } from './dto/user-create.dto';
 import { User } from './user.entity';
+import { v4 as uuidv4 } from 'uuid';
+import { UserUpdateResponseDto } from './dto/user-update.dto';
+import { UserDeleteResponseDto } from './dto/user-delete.dto';
 
 @Injectable()
 export class UsersService {
@@ -11,8 +14,7 @@ export class UsersService {
   ) {}
 
   async createUser(user: UserPostResponseDto) {
-    const entity = this.usersRepository.create(user);
-    await this.usersRepository.insert(entity);
+    await this.usersRepository.save(user);
     return user;
   }
 
@@ -23,11 +25,17 @@ export class UsersService {
     });
   }
 
-  async updateUser(user: User) {
-    this.usersRepository.save(user);
+  async updateUser(userUpdateResponseDto: UserUpdateResponseDto) {
+    const user = await this.usersRepository.create(userUpdateResponseDto);
+    await this.usersRepository.update(
+      { userId: user.userId },
+      userUpdateResponseDto,
+    );
+    return user;
   }
 
-  async deleteUser(user: User) {
-    this.usersRepository.delete(user.id);
+  async inactiveUser(user: UserDeleteResponseDto) {
+    this.usersRepository.softDelete({ userId: user.userId, isActive: true });
+    return user;
   }
 }
